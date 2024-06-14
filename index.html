@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidMont</title>
+  <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="video-container">
+  <video id="playme" class="playme" controls preload="auto" width="100%" height="auto">
+    <source src="/playme.mp4" type="video/mp4">
+    <!-- Include fallback for browsers that don't support HTML5 video -->
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that supports HTML5 video
+    </p>
+  </video>
+</div>
+
+<script src="https://vjs.zencdn.net/7.15.4/video.min.js"></script>
+<script>
+  // Initialize the video player
+  var player = videojs('playme');
+  
+  // Initialize variables to count events
+  var pauseCount = 0;
+  var playCount = 0;
+  var endedCount = 0;
+
+  // Track play event
+  player.on('play', function() {
+    console.log('Video started playing');
+    playCount++;
+    // You can send this event to the server for tracking
+  });
+
+  // Track pause event
+  player.on('pause', function() {
+    console.log('Video paused');
+    pauseCount++;
+    // You can send this event to the server for tracking
+  });
+
+  // Track ended event
+  player.on('ended', function() {
+    console.log('Video ended');
+    endedCount++;
+    // You can send this event to the server for tracking
+  });
+
+  // Track timeupdate event to monitor playback progress
+  player.on('timeupdate', function() {
+    var currentTime = player.currentTime();
+    console.log('Current time: ' + currentTime);
+    // You can send this event to the server for tracking
+  });
+
+  // Disable seeking (example only, not recommended for user experience)
+  player.controlBar.seekBar.off('mousedown');
+
+  // Logic to validate video watching without skipping
+  var videoDuration = player.duration();
+  var requiredWatchPercentage = 90; // 90% of video must be watched
+  var requiredWatchTime = (requiredWatchPercentage / 100) * videoDuration;
+
+  player.on('timeupdate', function() {
+    var currentTime = player.currentTime();
+    if (currentTime >= requiredWatchTime) {
+      console.log('User watched required percentage of the video');
+      // You can send this event to the server for validation
+    }
+  });
+
+  // Display the number of times paused
+  function displayPausedCount() {
+    console.log('Number of times paused: ' + pauseCount);
+    // Display on the webpage or do any other action you want
+  }
+</script>
+
+<style>
+  /* Style the video container */
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+  }
+
+  .video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Style the video player controls */
+  .vjs-control-bar {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Style the play/pause button */
+  .vjs-play-control,
+  .vjs-pause-control {
+    font-size: 20px;
+  }
+  
+  /* Style the seek bar */
+  .vjs-progress-holder {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .vjs-load-progress,
+  .vjs-play-progress {
+    background-color: #ff5733;
+  }
+  
+  /* Style the time display */
+  .vjs-time-control {
+    color: #fff;
+  }
+  
+  /* Style the error message for browsers that don't support HTML5 video */
+  .vjs-no-js {
+    color: #fff;
+  }
+  
+  /* Hide the default HTML5 video controls */
+  .video-js .vjs-tech {
+    height: 100%;
+    width: 100%;
+  }
+</style>
+
+</body>
+</html>
